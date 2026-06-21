@@ -1,5 +1,6 @@
 # Render Blueprint — бесплатный хостинг бэкенда, фронтенда и PostgreSQL
 # Деплой: https://dashboard.render.com/ → New → Blueprint → подключить репозиторий
+
 databases:
   - name: eis-db
     databaseName: eis
@@ -12,7 +13,7 @@ services:
     env: python
     plan: free
     rootDir: backend
-    buildCommand: pip install -r requirements.txt && python manage.py migrate --no-input && python manage.py collectstatic --no-input && python manage.py seed_data
+    buildCommand: "./build.sh"
     startCommand: gunicorn config.wsgi:application --bind 0.0.0.0:$PORT
     envVars:
       - key: SECRET_KEY
