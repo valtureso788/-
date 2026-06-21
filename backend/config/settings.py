@@ -10,9 +10,23 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-ais-appeals-secret-key-change-in-production-2026')
 
-DEBUG = os.environ.get('DEBUG', 'True') == 'True'
+# Render автоматически выставляет RENDER=true
+IS_RENDER = os.environ.get('RENDER', '') == 'true'
 
-ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', 'localhost,127.0.0.1').split(',')
+DEBUG = not IS_RENDER and (os.environ.get('DEBUG', 'True') == 'True')
+
+# ALLOWED_HOSTS: на Render добавляем домен автоматически
+RENDER_HOSTNAME = os.environ.get('RENDER_EXTERNAL_HOSTNAME', '')  # напр. eis-backend-rl5o.onrender.com
+
+ALLOWED_HOSTS = ['localhost', '127.0.0.1']
+if IS_RENDER:
+    ALLOWED_HOSTS += ['.onrender.com']
+    if RENDER_HOSTNAME:
+        ALLOWED_HOSTS.append(RENDER_HOSTNAME)
+# Также читаем ALLOWED_HOSTS из env (если вдруг задан вручную)
+_extra_hosts = os.environ.get('ALLOWED_HOSTS', '')
+if _extra_hosts:
+    ALLOWED_HOSTS += [h.strip() for h in _extra_hosts.split(',') if h.strip()]
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -129,15 +143,27 @@ SIMPLE_JWT = {
     'ROTATE_REFRESH_TOKENS': True,
 }
 
-# CORS
+# CORS — разрешаем фронтенд
 FRONTEND_URL = os.environ.get('FRONTEND_URL', '')
+RENDER_FRONTEND_URL = os.environ.get('RENDER_EXTERNAL_URL', '')  # может прийти автоматически
+
 CORS_ALLOWED_ORIGINS = [
     'http://localhost:5173',
     'http://127.0.0.1:5173',
 ]
 if FRONTEND_URL:
     CORS_ALLOWED_ORIGINS.append(FRONTEND_URL)
+if IS_RENDER:
+    # Разрешаем все поддомены onrender.com (статика фронтенда)
+    CORS_ALLOWED_ORIGIN_REGEXES = [r'^https://.*\.onrender\.com$']
 
 CORS_ALLOW_CREDENTIALS = True
 
-CSRF_TRUSTED_ORIGINS = [origin for origin in CORS_ALLOWED_ORIGINS if origin.startswith('http')]
+CSRF_TRUSTED_ORIGINS = [
+    'http://localhost:5173',
+    'http://127.0.0.1:5173',
+]
+if IS_RENDER:
+    CSRF_TRUSTED_ORIGINS.append('https://*.onrender.com')
+if FRONTEND_URL and FRONTEND_URL.startswith('http'):
+    CSRF_TRUSTED_ORIGINS.append(FRONTEND_URL)
