@@ -9,16 +9,13 @@ from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 def spa_view(request):
     """Отдаёт React SPA index.html для всех не-API маршрутов."""
     from pathlib import Path
-    index_path = Path(settings.BASE_DIR).parent / 'frontend' / 'dist' / 'index.html'
+    index_path = Path(settings.BASE_DIR) / 'frontend_dist' / 'index.html'
     if index_path.exists():
         return FileResponse(open(index_path, 'rb'), content_type='text/html; charset=utf-8')
-    # Фронтенд ещё не собран — показываем заглушку
     return HttpResponse(
-        '<h1 style="font-family:sans-serif;color:#333">ЕИС Контроль поручений</h1>'
-        '<p>Бэкенд работает ✅</p>'
-        '<p>API: <a href="/api/">/api/</a> | Админка: <a href="/admin/">/admin/</a></p>',
+        '<h1 style="font-family:sans-serif">ЕИС Контроль поручений</h1>'
+        '<p>Бэкенд работает ✅ | <a href="/api/">API</a> | <a href="/admin/">Админка</a></p>',
         content_type='text/html; charset=utf-8',
-        status=200,
     )
 
 

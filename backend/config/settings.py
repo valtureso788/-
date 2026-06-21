@@ -58,15 +58,15 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = 'config.urls'
 
-# Путь к собранному React-приложению
-_FRONTEND_DIST = REPO_DIR / 'frontend' / 'dist'
+# Путь к собранному React-приложению (лежит прямо в backend/)
+_FRONTEND_DIST = BASE_DIR / 'frontend_dist'
 
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
         'DIRS': [
             BASE_DIR / 'templates',
-            # index.html из собранного React-приложения (если уже собрано)
+            # index.html из собранного React-приложения
             *([_FRONTEND_DIST] if _FRONTEND_DIST.exists() else []),
         ],
         'APP_DIRS': True,
@@ -112,8 +112,7 @@ USE_TZ = True
 STATIC_URL = '/static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 
-# WhiteNoise: раздаём файлы React из корня сайта (/assets/index-xxx.js)
-# Устанавливаем только если папка существует (после сборки фронтенда)
+# WhiteNoise: раздаёт /assets/index-xxx.js и другие файлы прямо с корня
 if _FRONTEND_DIST.exists():
     WHITENOISE_ROOT = _FRONTEND_DIST
 
