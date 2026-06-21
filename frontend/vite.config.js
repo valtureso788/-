@@ -1,9 +1,10 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 
-export default defineConfig({
+export default defineConfig(({ command }) => ({
   plugins: [react()],
-  server: {
+  base: '/',
+  server: command === 'serve' ? {
     port: 5173,
     proxy: {
       '/api': {
@@ -15,5 +16,5 @@ export default defineConfig({
         changeOrigin: true,
       },
     },
-  },
-})
+  } : {},
+}))
