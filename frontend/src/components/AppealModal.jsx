@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { X } from 'lucide-react'
 import toast from 'react-hot-toast'
-import api from '../api/axios'
+import api, { mediaUrl } from '../api/axios'
 import StatusBadge from './StatusBadge'
 import Timeline from './Timeline'
 
@@ -256,7 +256,7 @@ export default function AppealModal({ appeal, executors = [], onClose, onSaved, 
                     {appeal.files.map(f => (
                       <div key={f.id} className="file-item">
                         <span style={{ fontSize: 16 }}>📎</span>
-                        <a href={f.file} target="_blank" rel="noreferrer" className="file-item-name" style={{ color: 'var(--primary)' }}>
+                        <a href={mediaUrl(f.file)} target="_blank" rel="noreferrer" className="file-item-name" style={{ color: 'var(--primary)' }}>
                           {f.original_name}
                         </a>
                       </div>

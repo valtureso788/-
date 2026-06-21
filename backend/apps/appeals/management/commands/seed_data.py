@@ -140,7 +140,12 @@ class Command(BaseCommand):
                 self.stdout.write(self.style.SUCCESS(f'  Создан: {username} / {password}'))
             executors.append(user)
 
-        # Обращения
+        # Обращения (только при первом запуске)
+        if Appeal.objects.exists():
+            self.stdout.write('Тестовые обращения уже есть — пропускаем.')
+            self._print_accounts()
+            return
+
         self.stdout.write('Создаём тестовые обращения...')
 
         statuses = ['new', 'assigned', 'in_progress', 'on_site', 'done', 'closed', 'declined']
@@ -197,6 +202,9 @@ class Command(BaseCommand):
 
         self.stdout.write(self.style.SUCCESS(f'Создано {len(CITIZENS)} обращений'))
         self.stdout.write(self.style.SUCCESS('✅ Тестовые данные загружены!'))
+        self._print_accounts()
+
+    def _print_accounts(self):
         self.stdout.write('')
         self.stdout.write('Учётные записи:')
         self.stdout.write('  admin     / admin123    — Администратор')
