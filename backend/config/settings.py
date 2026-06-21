@@ -58,13 +58,16 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = 'config.urls'
 
+# Путь к собранному React-приложению
+_FRONTEND_DIST = REPO_DIR / 'frontend' / 'dist'
+
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
         'DIRS': [
             BASE_DIR / 'templates',
-            # index.html из собранного React-приложения
-            REPO_DIR / 'frontend' / 'dist',
+            # index.html из собранного React-приложения (если уже собрано)
+            *([_FRONTEND_DIST] if _FRONTEND_DIST.exists() else []),
         ],
         'APP_DIRS': True,
         'OPTIONS': {
@@ -109,10 +112,10 @@ USE_TZ = True
 STATIC_URL = '/static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 
-# WhiteNoise: раздаём статику Django + assets React-приложения (/assets/...)
-# WHITENOISE_ROOT раздаёт файлы с корня сайта (без /static/ префикса)
-# Это позволяет React-бандлу работать по путям /assets/index-xxx.js
-WHITENOISE_ROOT = REPO_DIR / 'frontend' / 'dist'
+# WhiteNoise: раздаём файлы React из корня сайта (/assets/index-xxx.js)
+# Устанавливаем только если папка существует (после сборки фронтенда)
+if _FRONTEND_DIST.exists():
+    WHITENOISE_ROOT = _FRONTEND_DIST
 
 # Django 4.2+ / 6.0: используем STORAGES вместо устаревшего STATICFILES_STORAGE
 STORAGES = {
