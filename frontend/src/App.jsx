@@ -7,6 +7,8 @@ import Login from './pages/Login'
 import Dashboard from './pages/Dashboard'
 import AppealsList from './pages/AppealsList'
 import MyAppeals from './pages/MyAppeals'
+import CitizenPortal from './pages/CitizenPortal'
+import Welcome from './pages/Welcome'
 
 function ProtectedRoute({ children, roles }) {
   const { user, loading } = useAuth()
@@ -25,8 +27,10 @@ function AppRoutes() {
   return (
     <Routes>
       {/* Публичные */}
-      <Route path="/" element={<PublicForm />} />
+      <Route path="/" element={<Welcome />} />
+      <Route path="/new-appeal" element={<PublicForm />} />
       <Route path="/status" element={<StatusCheck />} />
+      <Route path="/citizen" element={<CitizenPortal />} />
       <Route path="/login" element={user ? <Navigate to="/dashboard" replace /> : <Login />} />
 
       {/* Защищённые */}

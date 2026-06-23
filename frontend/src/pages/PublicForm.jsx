@@ -81,16 +81,23 @@ export default function PublicForm() {
   return (
     <div className="public-page">
       <header className="public-header">
-        <div className="public-header-logo">
-          <Building2 size={24} color="#fff" />
-        </div>
-        <div>
-          <h1>Администрация района</h1>
-          <p>АИС «Обращения» — Приём обращений граждан</p>
-        </div>
-        <Link to="/status" className="public-check-link">
-          🔍 Проверить статус
+        <Link to="/" style={{ display: 'flex', alignItems: 'center', gap: '16px', textDecoration: 'none' }}>
+          <div className="public-header-logo">
+            <Building2 size={24} color="#fff" />
+          </div>
+          <div>
+            <h1 style={{ color: '#fff', fontSize: '17px', margin: 0 }}>Администрация района</h1>
+            <p style={{ color: 'rgba(255,255,255,0.6)', fontSize: '12px', margin: '3px 0 0' }}>АИС «Обращения» — Приём обращений граждан</p>
+          </div>
         </Link>
+        <div className="public-header-links">
+          <Link to="/citizen" className="public-check-link" style={{ marginLeft: 0 }}>
+            👤 Личный кабинет
+          </Link>
+          <Link to="/status" className="public-check-link" style={{ marginLeft: 0 }}>
+            🔍 Проверить статус
+          </Link>
+        </div>
       </header>
 
       <div className="public-main">

@@ -19,7 +19,7 @@ DEBUG = not IS_RENDER and (os.environ.get('DEBUG', 'True') == 'True')
 
 # ALLOWED_HOSTS
 RENDER_HOSTNAME = os.environ.get('RENDER_EXTERNAL_HOSTNAME', '')
-ALLOWED_HOSTS = ['localhost', '127.0.0.1']
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', 'testserver']
 if IS_RENDER:
     ALLOWED_HOSTS += ['.onrender.com']
     if RENDER_HOSTNAME:
@@ -135,7 +135,6 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 AUTH_USER_MODEL = 'users.User'
 
-# REST Framework
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework_simplejwt.authentication.JWTAuthentication',
@@ -145,6 +144,7 @@ REST_FRAMEWORK = {
     ),
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
     'PAGE_SIZE': 20,
+    'URL_FORMAT_OVERRIDE': None,
 }
 
 # JWT
@@ -175,3 +175,38 @@ if IS_RENDER:
     CSRF_TRUSTED_ORIGINS.append('https://*.onrender.com')
 if FRONTEND_URL and FRONTEND_URL.startswith('http'):
     CSRF_TRUSTED_ORIGINS.append(FRONTEND_URL)
+
+# ──────────────────────────────────────────────────────────────────────────────
+# Email / SMTP
+# В разработке письма выводятся в консоль.
+# В продакшене задайте переменные окружения EMAIL_HOST, EMAIL_PORT и т.д.
+# ──────────────────────────────────────────────────────────────────────────────
+EMAIL_HOST = os.environ.get('EMAIL_HOST', '')
+EMAIL_PORT = int(os.environ.get('EMAIL_PORT', 587))
+EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER', '')
+EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD', '')
+EMAIL_USE_TLS = os.environ.get('EMAIL_USE_TLS', 'True') == 'True'
+DEFAULT_FROM_EMAIL = os.environ.get('DEFAULT_FROM_EMAIL', 'noreply@eis-appeals.ru')
+
+# Если SMTP не настроен — письма выводятся в консоль (удобно для разработки)
+if EMAIL_HOST:
+    EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+else:
+    EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+
+# ──────────────────────────────────────────────────────────────────────────────
+# Logging
+# ──────────────────────────────────────────────────────────────────────────────
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'console': {'class': 'logging.StreamHandler'},
+    },
+    'loggers': {
+        'apps.appeals.emails': {
+            'handlers': ['console'],
+            'level': 'INFO',
+        },
+    },
+}

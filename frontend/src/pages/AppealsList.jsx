@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react'
-import { Search, SlidersHorizontal, Plus, RefreshCw } from 'lucide-react'
+import { Search, SlidersHorizontal, RefreshCw, FileDown, FileText } from 'lucide-react'
 import api from '../api/axios'
 import StatusBadge from '../components/StatusBadge'
 import AppealModal from '../components/AppealModal'
@@ -42,6 +42,7 @@ export default function AppealsList() {
     status: '', category: '', assigned_to: '',
     date_from: '', date_to: '', search: '',
   })
+  const [exporting, setExporting] = useState(false)
 
   const PAGE_SIZE = 20
 
@@ -84,6 +85,39 @@ export default function AppealsList() {
     setPage(1)
   }
 
+  const handleExport = async (fmt) => {
+    setExporting(true)
+    try {
+      const params = new URLSearchParams()
+      params.set('format', fmt)
+      if (filters.status) params.set('status', filters.status)
+      if (filters.category) params.set('category', filters.category)
+      if (filters.assigned_to) params.set('assigned_to', filters.assigned_to)
+      if (filters.date_from) params.set('date_from', filters.date_from)
+      if (filters.date_to) params.set('date_to', filters.date_to)
+      if (filters.search) params.set('search', filters.search)
+
+      const token = localStorage.getItem('access_token')
+      const response = await fetch(`/api/appeals/export/?${params}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      })
+      if (!response.ok) throw new Error('Export failed')
+
+      const blob = await response.blob()
+      const ext = fmt === 'excel' ? 'xlsx' : 'pdf'
+      const url = URL.createObjectURL(blob)
+      const a = document.createElement('a')
+      a.href = url
+      a.download = `appeals_export_${new Date().toISOString().slice(0, 10)}.${ext}`
+      a.click()
+      URL.revokeObjectURL(url)
+    } catch (e) {
+      alert('Ошибка при экспорте: ' + e.message)
+    } finally {
+      setExporting(false)
+    }
+  }
+
   const totalPages = Math.ceil(total / PAGE_SIZE)
 
   return (
@@ -92,6 +126,25 @@ export default function AppealsList() {
         <h2>📋 Все обращения</h2>
         <div className="topbar-right">
           <span style={{ fontSize: 12, color: 'var(--text-muted)' }}>Всего: {total}</span>
+          <button
+            id="export-excel-btn"
+            className="btn btn-excel btn-sm"
+            onClick={() => handleExport('excel')}
+            disabled={exporting}
+            title="Экспорт в Excel"
+          >
+            <FileDown size={13} />
+            {exporting ? 'Экспорт...' : 'Excel'}
+          </button>
+          <button
+            id="export-pdf-btn"
+            className="btn btn-pdf btn-sm"
+            onClick={() => handleExport('pdf')}
+            disabled={exporting}
+            title="Экспорт в PDF"
+          >
+            <FileText size={13} /> PDF
+          </button>
           <button className="btn btn-secondary btn-sm" onClick={load}>
             <RefreshCw size={13} />
           </button>

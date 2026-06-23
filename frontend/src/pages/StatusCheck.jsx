@@ -29,14 +29,16 @@ export default function StatusCheck() {
   return (
     <div className="public-page">
       <header className="public-header">
-        <div className="public-header-logo">
-          <Building2 size={24} color="#fff" />
-        </div>
-        <div>
-          <h1>Администрация района</h1>
-          <p>Проверка статуса обращения</p>
-        </div>
-        <Link to="/" className="public-check-link">← Подать обращение</Link>
+        <Link to="/" style={{ display: 'flex', alignItems: 'center', gap: '16px', textDecoration: 'none' }}>
+          <div className="public-header-logo">
+            <Building2 size={24} color="#fff" />
+          </div>
+          <div>
+            <h1 style={{ color: '#fff', fontSize: '17px', margin: 0 }}>Администрация района</h1>
+            <p style={{ color: 'rgba(255,255,255,0.6)', fontSize: '12px', margin: '3px 0 0' }}>Проверка статуса обращения</p>
+          </div>
+        </Link>
+        <Link to="/" className="public-check-link">← На главную</Link>
       </header>
 
       <div className="public-main">

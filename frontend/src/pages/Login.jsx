@@ -113,7 +113,7 @@ export default function Login() {
 
         <div style={{ marginTop: 16, textAlign: 'center' }}>
           <Link to="/" style={{ fontSize: 12, color: 'var(--text-muted)', textDecoration: 'none' }}>
-            ← Форма подачи обращения
+            ← На главную страницу
           </Link>
         </div>
       </div>
